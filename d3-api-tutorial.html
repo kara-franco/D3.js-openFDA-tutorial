@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!-- Author: Kara Franco 
+CS 290 Web Development
+How-To
+Due Date: December 2, 2015
+
+Description: This is a tutorial website to explain how to use the D3.js library with the web API openFDA. This project uses many of the concepts that I have learned throughout the quarter. --> 
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>D3 and openFDA</title>
+    <!-- link to style sheet -->
+    <link rel="stylesheet" href="how-to.css" type="text/css">
+  <style> 
+       
+    #xaxis .domain {
+		fill:none;
+		stroke:#000;
+	}
+	#xaxis text, #yaxis text {
+		font-size: 8.25px;
+	}
+   </style>
+   </head>
+  <body>
+
+  <legend class="topLabel"> D3.js and openFDA </legend>
+           
+<h3>A short tutorial about displaying data from the openFDA Web API in D3.js </h3>
+<h2>by Kara Franco</h2>
+
+<p>The following is a short tutorial which serves as an introduction to working with data from an API in <a href="http://d3js.org/"> D3.js</a>. There is a slew of tutorials explaining how to get started with D3.js and many of them work with small data hardcoded in the document or data from a CSV file. In this example we will retrieve data from the web and display it in a meaningful way. But first let’s become familiar with both of the tools. </p>
+<br>
+<h3>Data Driven Documents</h3>
+      
+<p>D3 is a Javascript library that is used to build data visualizations. It works with both HTML5 and CSS3 standards to build interactive, dynamic charts and graphs. One of the most foundational elements of D3 are SVG objects, or scalable vector graphics objects. </p>
+    
+<p>In a bitmap image, such as a png or jpeg, the lines and shapes are composed of fixed pixels which become distorted and fuzzy when we alter the image size. SVG images prevent this pixelation by defining the image in a XML text file, allowing the image elements to be searched, indexed, scripted and compressed. The most important detail about SVG objects is that the coordinate system that they use is flipped (from what we learned in maths class); meaning that the origin of where we start is at the top left. This will be important to remember when we are adjusting and scaling the drawing to fit the web page.</p>
+
+<center><img src="coord-image.svg" width="475" height="360" > </center>
+      
+<p>D3 allows for easy access to the Document Object Model (DOM) with the two methods, <strong>d3.select()</strong> and <strong>d3.selectAll()</strong>. Compared to the W3C DOM API, D3 limits the amount of code needed to access HTML elements. Here is an example using a heading 1 tag</p>
+      <br>
+      <script src="https://gist.github.com/kara-franco/124aa4bfaadcb3611f57.js"></script>
+      <br>
+<p>From this, we can see that if we use <strong>d3.select(“body”)</strong> it will return a selection of the page body, which is an array of nodes that then can be manipulated. The <strong>d3.select()</strong> method supports many of the HTML tags and all the CSS standard selectors; so we can choose all different types of identifiers. You can learn more about the <strong>d3.select()</strong> method <a href="https://github.com/mbostock/d3/wiki/Selections"> here </a> and <a href="http://bost.ocks.org/mike/selection/#subclass"> here </a>. Next, there is the append operator method, <strong>.append()</strong>, that is used to add elements such as a SVG to the selection. After we append we can then assign style attributes with the <strong>.attr()</strong> method.</p>
+      <br>
+      <script src="https://gist.github.com/kara-franco/447e047e52b7bef6573a.js"></script>
+      <br>
+<p>The HTML file above is a simple example of drawing a horizontal bar on a HTML page with D3. There are a few important details to point out. First, note that we can use the minified version of the D3 library which is the <strong>d3.min.js</strong> file that is added in the head tag. You can download the file from the <a href="https://d3js.org/"> D3 home page </a> or you can link directly to the latest link, which we will do in the final example. You can also see that we can declare the width and height of the SVG container by using the global variables h and w. This will allow for us to easily change the size of the SVG. Lastly, it is important to note that the <strong>.attr()</strong> method takes in two arguments, the attribute to be changed and the new value for the attribute.</p>
+      
+<p>This is basically all you need to know to get started with D3. For more documentation, the  <a href="https://github.com/mbostock/d3/wiki"> D3 Github Wiki </a> is a great resource with explanations of what you can do with the D3 library and how to do it. </p>     
+<br>    
+<h3>openFDA Web API</h3>   
+      
+<p><a href="https://open.fda.gov/"> openFDA </a> is a collection of open-source web APIs for food, drug and device data. It is a research project that started in 2014 by the Office of Informatics and Technology Innovation at the FDA. The project's goal is to create easy access of FDA public health data to educate the public and to allow for openness and accountability in data reporting. openFDA allows developers and data scientists to have access to this data to make informative applications. Currently, the project focuses on datasets that contain: adverse events, recalls and labelling. The ultimate goal of this project is to plan public challenges to explain the data and spark innovation.</p>
+      
+<p>To get started with the openFDA Web API you will need to obtain an <a href="https://open.fda.gov/api/reference/"> API key </a> and become familiar with the structure of the datasets, query parameters and syntax. It is important to understand what the datasets contain so that you can create successful queries. Most errors will come from not entering the search query correctly. Visiting their <a href="https://open.fda.gov/api/reference/"> API website </a> will have all the information you need; including this query box that will allow you to see if your search was successful and view the results of your query so that you understand how to access the data. </p>
+          
+<center><img src="fixOpenFDA.svg" > </center>
+      
+<p>Once you have your API key and a good understanding of what the datasets contain; you can practice a few queries. Below is an example of a basic query made to openFDA written in D3.js with the data printed to the console for exploration.</p>   
+      
+      <br>
+<script src="https://gist.github.com/kara-franco/e17b1216ad70968b51d3.js"></script> 
+      <br>
+      <p>As you can see, D3 does a lot of the work for us in making the XMLHttpRequest. By using <strong>d3.json()</strong> anything within the function will be executed once we get the data from the web source. This is where we want to write our code so that it can accept and adapt to any data that is coming from the source. We will explore more of this later. For now, it is important to note that we used the global variables <strong>resultsCount</strong> and <strong>resultsTerm</strong> to capture the the data within the results. You can use F12 to inspect the data within the object that is returned from the <strong>console.log(data)</strong>, the array of count (number of patients) from <strong>console.log(resultsCount)</strong> and the array of term (description of side effect) from <strong>console.log(resultsTerm)</strong>. </p>     
+<h3>Combining openFDA and D3.js</h3> 
+
+<p>At this point we have a basic understanding of how to draw a horizontal bar in D3.js and how to get data from the openFDA API. The HTML file below puts together the two to make a horizontal bar chart of the patient reactions to nonsteroidal anti-inflammatory drugs. Let’s take a look at it! </p>
+      
+<p>The style tag defines a few global styles, such as the font family, font size and padding for our wrapper div. This wrapper div will hold together the SVG container and the grid of the chart. In the body there is an example of linking directly to the minified D3 library through the website. Below that are the global variables and a <strong>d3.json()</strong> call to openFDA. This is familiar, however what we are doing within the d3.json callback is new, scroll down and take a look; then find the step-by-step explanation and actual chart below.  </p>
+      <br>
+<script src="https://gist.github.com/kara-franco/fcf77408efc904575f9e.js"></script>
+      <br> 
+<p>Basically, what we have above is a list of variable definitions that build upon each other. There is an array of <strong>colors</strong> that serve as a pool to fill our horizontal bars. Below that we draw the grid, using the methods <strong>.range()</strong> which returns an array containing an arithmetic progression (we start steps at 25) and <strong>.map()</strong> which makes a new map with a key function that gives the objects their keys. Note that we give <strong>y2</strong> a large key, since we will have a large array. </p>     
+      
+      
+<p><strong>tickVals</strong> applies the bottom tick values to the grid, incrementing the numbers by 1,000. We then need to define the scale of the chart, keeping in mind that our data for count has a max value of 21,139 and a minimum of 1,845 for the <strong>xscale</strong> and a max number of 100 terms for the <strong>yscale</strong>. The <strong>.quantize()</strong> method constructs a scale (with the domain of 0 to the length of the resultsTerm array) to apply the colors to the horizontal bar. </p>     
+    
+<p>As we did in the first example (drawing a horizontal bar), the <strong>.select()</strong> method will create a SVG container which will then be attached to the grid. We give the <strong>grids()</strong> variable a transform attribute that specifies a translation by x and y. This will place our grid on the SVG, so that the grids origin (0,0) starts at (150,10) in the SVG object. </p>    
+      
+<p><strong>xAxis</strong> and <strong>yAxis</strong> connect the values that we created from the <strong>xscale</strong> and <strong>yscale</strong> to the grid. Next, we attach the bars to the grid. The bars are built with the <strong>resultsCount</strong> data and positioned onto the grid so that they align with the term text. The bars are also filled with the colors from <strong>colorScale()</strong>. Lastly, the bars are animated with the <strong>.transition()</strong> method which, upon loading (or creating) the document, animates the bar growth. The method <strong>.duration()</strong> sets the number of milliseconds that the transition occurs. Go ahead and play with it, setting it to 100,000 milliseconds will let you see how the methods work together! </p> 
+      
+<p>So in this tutorial, we have built the horizontal bar chart with the data from openFDA. We have looked at how D3.js can get data from a web API and manipulate the DOM to create a dynamic, animated bar chart. There are many other things we can do with this data, such as identify the top ten percent of side effects or take in data from another query and compare the two pharmaceutical classes. Hopefully, this tutorial has sparked some interest in the power of D3.js and the potential of the openFDA web API. Here are some great resources to help continue your learning; <a href="https://www.pluralsight.com/courses/d3js-data-visualization-fundamentals">PluralSight Tutorial </a>, <a href="http://chimera.labs.oreilly.com/books/1230000000345/"> Interactive Data Visualization </a>  and <a href="https://www.dashingd3js.com/table-of-contents"> Dashing D3.js. </a> </p> 
+      <br>
+      
+       <h3> Patient Reactions to Nonsteroidal Anti-inflammatory Drugs (data out of 674,866 patients)</h3>
+         <div id="wrapper">
+	</div>
+          <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    
+      <script>   
+var h = 350;
+var w = 400;
+
+var resultsCount = [];
+var resultsTerm = [];
+
+         d3.json('https://api.fda.gov/drug/event.json?api_key=YAOTPTDcc7ruOkcrNgwtnMJK1ErKxK4Cbg4LlpMk&search=patient.drug.openfda.pharm_class_epc:"nonsteroidal+anti-inflammatory+drug"&count=patient.reaction.reactionmeddrapt.exact', function(error, data) {
+                
+            
+                
+                    //check the file loaded properly
+                if (error) { 
+                    console.log(error); 
+                } else {      
+                    console.log(data);  //raw data
+                }
+                
+       
+             var j = 0;   
+        data.results.forEach(function(ds){
+                       // console.log(ds);
+              
+                
+                
+             resultsCount [j]= ds.count;
+             resultsTerm [j] = ds.term;
+      
+          //  console.log(ds.term);
+           
+             j++;
+                });
+           
+            console.log(resultsCount);
+         resultsTerm.unshift("");
+            console.log(resultsTerm);
+        
+         var colors = ['#E53C38', '#E35639', '#E16F3A', '#DF873B', '#DD9E3C',  '#DCB53E', '#DACA3F', '#D1D840', '#BAD641', '#A4D442', '#8ED343', '#79D144', '#65CF45', '#52CD46', '#47CB4E', '#48CA62', '#49C875', '#49C687', '#4AC498', '#4BC2A8', '#4CC1B8', '#4CB7BF', '#4DA5BD', '#4E94BB', '#4F83BA'];
+
+		var grid = d3.range(25).map(function(i){
+			return {'x1':0,'y1':0,'x2':0,'y2':3000};
+		});
+
+		var tickVals = grid.map(function(d,i){
+			if(i>0){ return i*1000; }
+			else if(i===0){ return "";}
+		});
+
+		var xscale = d3.scale.linear()
+						.domain([0,25000])
+						.range([0,722]);
+
+		var yscale = d3.scale.linear()
+						.domain([0, 175])
+						.range([0,3800]);
+
+		var colorScale = d3.scale.quantize()
+						.domain([0, resultsTerm.length])
+						.range(colors);
+
+		var canvas = d3.select('#wrapper')
+						.append('svg')
+						.attr({'width':3500,'height':2225});
+
+		var grids = canvas.append('g')
+						  .attr('id','grid')
+						  .attr('transform','translate(150,10)')
+						  .selectAll('line')
+						  .data(grid)
+						  .enter()
+						  .append('line')
+						  .attr({'x1':function(d,i){ return i*30; },
+								 'y1':function(d){ return d.y1; },
+								 'x2':function(d,i){ return i*30; },
+								 'y2':function(d){ return d.y2; },
+							})
+						  .style({'stroke':'#adadad','stroke-width':'1px'});
+
+		var	xAxis = d3.svg.axis();
+			xAxis
+				.orient('bottom')
+				.scale(xscale)
+				.tickValues(tickVals);
+
+		var	yAxis = d3.svg.axis();
+			yAxis
+				.orient('left')
+				.scale(yscale)
+				.tickSize(1)
+				.tickFormat(function(d,i){ return resultsTerm[i]; })
+				.tickValues(d3.range(125));
+
+		var y_xis = canvas.append('g')
+						  .attr("transform", "translate(150,0)")
+						  .attr('id','yaxis')
+						  .call(yAxis);
+
+		var x_xis = canvas.append('g')
+						  .attr("transform", "translate(150,2190)")
+						  .attr('id','xaxis')
+						  .call(xAxis);
+
+		var chart = canvas.append('g')
+							.attr("transform", "translate(150,0)")
+							.attr('id','bars')
+							.selectAll('rect')
+							.data(resultsCount)
+							.enter()
+							.append('rect')
+							.attr('height',17)
+							.attr({'x':0,'y':function(d,i){ return yscale(i)+12; }})
+							.style('fill',function(d,i){ return colorScale(i); })
+							.attr('width',function(d){ return 0; });
+                           
+              
+
+		var transit = d3.select("svg").selectAll("rect")
+						    .data(resultsCount)
+						    .transition()
+						    .duration(1000) 
+						    .attr("width", function(d) {return xscale(d); });
+
+		var transitext = d3.select('#bars')
+							.selectAll('text')
+							.data(resultsCount)
+							.enter()
+							.append('text')
+							.attr({'x':function(d) {return xscale(d)-40; },'y':function(d,i){ return yscale(i)+25; }})
+							.text(function(d){ return d; }).style({'fill':'#fff','font-size':'14px'});
+            
+           
+              d3.select('#chart').attr('align', 'center');
+            
+      var total = 0;
+            for (var i in resultsCount) {
+             total += resultsCount[i];
+                
+            }
+            console.log(total);
+            
+         });
+        
+    
+
+        </script> 
+  </body>
+</html>

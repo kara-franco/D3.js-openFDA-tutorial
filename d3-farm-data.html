@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+ 
+  <meta charset="utf-8">
+ 	<title>D3 and openFDA</title>
+	<style>
+        body {
+            padding: 2em 2em 15em;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        div{
+            padding: 2em 2em 100em;
+        }
+        
+	   #xaxis .domain {
+		fill:none;
+		stroke:#000;
+	   }
+	   #xaxis text, #yaxis text {
+		font-size: 8.25px;
+	   }
+	</style>
+</head>   
+    
+     <body>
+<h3> Patient Reactions to Nonsteroidal Anti-inflammatory Drugs (data out of 674,866 patients)</h3>
+        <div id="wrapper"></div>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+      
+        <script>   
+            var h = 350;
+            var w = 400;
+
+            var resultsCount = [];
+            var resultsTerm = [];
+            var apiKey = 'YAOTPTDcc7ruOkcrNgwtnMJK1ErKxK4Cbg4LlpMk'
+    
+            d3.json('https://api.fda.gov/drug/event.json?api_key=' + apiKey + '&search=patient.drug.openfda.pharm_class_epc:"nonsteroidal+anti-inflammatory+drug"&count=patient.reaction.reactionmeddrapt.exact', function(error, data) {
+                
+                if (error) { 
+                    console.log(error); 
+                } else {      
+                    console.log(data); 
+                }
+                
+       
+                var j = 0;   
+                data.results.forEach(function(ds){
+                    // console.log(ds);
+                    resultsCount [j]= ds.count;
+                    resultsTerm [j] = ds.term;
+                    // console.log(ds.term);
+                    j++;
+                });
+           
+                console.log(resultsCount);
+                // add a blank element in the beginning of the array for spacing
+                resultsTerm.unshift("");
+                console.log(resultsTerm);
+        
+                var colors = ['#E53C38', '#E35639', '#E16F3A', '#DF873B', '#DD9E3C',  '#DCB53E', '#DACA3F', '#D1D840', '#BAD641', '#A4D442', '#8ED343', '#79D144', '#65CF45', '#52CD46', '#47CB4E', '#48CA62', '#49C875', '#49C687', '#4AC498', '#4BC2A8', '#4CC1B8', '#4CB7BF', '#4DA5BD', '#4E94BB', '#4F83BA'];
+                
+                // draw the gray grid
+		        var grid = d3.range(25).map(function(i){
+			         return {'x1':0,'y1':0,'x2':0,'y2':3000};
+                });
+
+                // draw the bottom tick values (for this dataset we are increasing by 1000
+                var tickVals = grid.map(function(d,i){
+                    if(i>0){ return i*1000; }
+                    else if(i===0){ return "";}
+                });
+
+                // horizontal bars will need to support data up to 21,139
+                var xscale = d3.scale.linear()
+                                .domain([0,25000])
+                                .range([0,722]);
+
+                // there are about 100 elements in the array
+                var yscale = d3.scale.linear()
+                                .domain([0, 175])
+                                .range([0,3800]);
+    
+                var colorScale = d3.scale.quantize()
+                                .domain([0, resultsTerm.length])
+                                .range(colors);
+                // create the SVG container
+                var canvas = d3.select('#wrapper')
+                                .append('svg')
+                                .attr({'width':3500,'height':2225});
+                // attach the grid to the SVG container
+                var grids = canvas.append('g')
+                                  .attr('id','grid')
+                                  .attr('transform','translate(150,10)')
+                                  .selectAll('line')
+                                  .data(grid)
+                                  .enter()
+                                  .append('line')
+                                  .attr({'x1':function(d,i){ return i*30; },
+                                         'y1':function(d){ return d.y1; },
+                                         'x2':function(d,i){ return i*30; },
+                                         'y2':function(d){ return d.y2; },
+                                    })
+                                  .style({'stroke':'#adadad','stroke-width':'1px'});
+
+                var	xAxis = d3.svg.axis();
+                    xAxis
+                        .orient('bottom')
+                        .scale(xscale)
+                        .tickValues(tickVals);
+
+                var	yAxis = d3.svg.axis();
+                    yAxis
+                        .orient('left')
+                        .scale(yscale)
+                        .tickSize(1)
+                        .tickFormat(function(d,i){ return resultsTerm[i]; })
+                        .tickValues(d3.range(125));
+
+                var y_xis = canvas.append('g')
+                                  .attr("transform", "translate(150,0)")
+                                  .attr('id','yaxis')
+                                  .call(yAxis);
+
+                var x_xis = canvas.append('g')
+                                  .attr("transform", "translate(150,2190)")
+                                  .attr('id','xaxis')
+                                  .call(xAxis);
+                // attach the bars to the grid
+                var chart = canvas.append('g')
+                                    .attr("transform", "translate(150,0)")
+                                    .attr('id','bars')
+                                    .selectAll('rect')
+                                    .data(resultsCount)
+                                    .enter()
+                                    .append('rect')
+                                    .attr('height',17)
+                                    .attr({'x':0,'y':function(d,i){ return yscale(i)+12; }})
+                                    .style('fill',function(d,i){ return colorScale(i); })
+                                    .attr('width',function(d){ return 0; });
+
+
+                // on load, animate bars 
+                var transit = d3.select("svg").selectAll("rect")
+                                    .data(resultsCount)
+                                    .transition()
+                                    .duration(1000) 
+                                    .attr("width", function(d) {return xscale(d); });
+
+                var transitext = d3.select('#bars')
+                                    .selectAll('text')
+                                    .data(resultsCount)
+                                    .enter()
+                                    .append('text')
+                                    .attr({'x':function(d) {return xscale(d)-40;},'y':function(d,i){ return yscale(i)+25; }})
+                                    .text(function(d){ return d; }).style({'fill':'#fff','font-size':'14px'});
+
+
+                      
+                var total = 0;
+                for (var i in resultsCount) {
+                    total += resultsCount[i];
+                }
+                console.log(total);    
+         });
+        
+        </script>
+   </body>
+</html>

@@ -1,0 +1,56 @@
+/*******************************************************************************
+Author: Kara Franco 
+CS 290 Web Development
+*************************************************************************************/
+
+/* general centered layout, bullet and display text will be dark blue */
+body {
+    margin: 0 auto;
+    padding: 2em 2em 4em;
+    max-width: 800px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5em;
+    color: #454497;
+    background-color: #ffffff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+/* apply different color to label */
+.topLabel {
+    color: #4CC1B8;
+    font-weight: bold;
+    font-size: 300%
+}
+img {
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    
+}
+
+strong {
+    color: #bf4040;
+    font-weight: 400;  
+}
+
+
+
+/* lighten up the font wieght and change color */
+h3 {
+    color: #238487;
+    font-weight: bold;
+    line-height: 1.3em;
+}
+
+h2 {
+    color: #4CC1B8;
+    font-weight: bold;
+    line-height: 1.3em;
+    font-size: 15px;
+}
+
+
+/* apply different color to list labels (improve readability) */
+.listLabel {
+     color: #238487;  
+}
